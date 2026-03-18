@@ -1,0 +1,49 @@
+name: AI README Update
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate AI Summary
+        id: ai_summary
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+
+          SUMMARY=$(curl https://api.openai.com/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+            -d '{
+              "model": "gpt-4o-mini",
+              "messages": [{
+                "role": "user",
+                "content": "Summarize this pull request in 2 lines: '"$PR_TITLE"' '"$PR_BODY"'"
+              }]
+            }' | jq -r '.choices[0].message.content')
+
+          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
+
+      - name: Update README
+        run: |
+          echo "## Latest Update" >> README.md
+          echo "${{ steps.ai_summary.outputs.summary }}" >> README.md
+          echo "" >> README.md
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update README with AI PR summary"
+          git push
