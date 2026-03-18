@@ -1,0 +1,88 @@
+:root{
+	--bg: #f7f7fb;
+	--card: #ffffff;
+	--muted: #6b7280;
+	--accent: #2563eb;
+}
+
+main.main{
+	min-height: 100vh;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	padding:2rem;
+	background:var(--bg);
+	box-sizing:border-box;
+}
+
+.todo-root{
+	width:100%;
+	max-width:600px;
+	background:var(--card);
+	border-radius:10px;
+	padding:1.25rem 1.5rem;
+	box-shadow:0 6px 20px rgba(15,23,42,0.08);
+}
+
+.todo-root h1{
+	margin:0 0 0.75rem 0;
+	font-size:1.5rem;
+}
+
+.add-row{
+	display:flex;
+	gap:0.5rem;
+	margin-bottom:1rem;
+}
+
+.add-row input{
+	flex:1;
+	padding:0.6rem 0.75rem;
+	border:1px solid #e6e7eb;
+	border-radius:6px;
+	font-size:0.95rem;
+}
+
+.add-btn{
+	background:var(--accent);
+	color:white;
+	border:none;
+	padding:0.55rem 0.9rem;
+	border-radius:6px;
+	cursor:pointer;
+}
+
+.todo-list{
+	list-style:none;
+	padding:0;
+	margin:0;
+	display:flex;
+	flex-direction:column;
+	gap:0.5rem;
+}
+
+.todo-list li{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0.5rem;
+	border-radius:6px;
+	border:1px solid transparent;
+}
+
+.todo-list li:hover{background:linear-gradient(90deg, rgba(37,99,235,0.02), transparent)}
+
+.task{ display:flex; align-items:center; gap:0.6rem; flex:1 }
+.task .text{ font-size:0.98rem }
+
+.todo-list li.done .text{ text-decoration:line-through; color:var(--muted) }
+
+.delete{
+	background:transparent;
+	border:0;
+	color:var(--muted);
+	cursor:pointer;
+	font-size:1.05rem;
+}
+
+.empty{ color:var(--muted); margin-top:0.5rem }
