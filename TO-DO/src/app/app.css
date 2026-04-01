@@ -8,16 +8,23 @@
 main.main{
 	min-height: 100vh;
 	display:flex;
-	align-items:center;
+	align-items:flex-start;
 	justify-content:center;
 	padding:2rem;
 	background:var(--bg);
 	box-sizing:border-box;
 }
 
+.container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 600px;
+	gap: 1rem;
+}
+
 .todo-root{
 	width:100%;
-	max-width:600px;
 	background:var(--card);
 	border-radius:10px;
 	padding:1.25rem 1.5rem;

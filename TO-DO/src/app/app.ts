@@ -1,5 +1,7 @@
 import { Component, signal, effect } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SelectedTodos } from './selected-todos/selected-todos';
+import { CommonModule } from '@angular/common';
 
 interface Todo {
   id: number;
@@ -9,7 +11,7 @@ interface Todo {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, SelectedTodos, CommonModule],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

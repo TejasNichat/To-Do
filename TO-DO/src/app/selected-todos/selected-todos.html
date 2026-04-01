@@ -1,0 +1,15 @@
+<div class="selected-root">
+  <h2>Completed Tasks</h2>
+
+  <ul class="selected-list" *ngIf="selectedTodos.length > 0">
+    <li *ngFor="let t of selectedTodos" class="done">
+      <label class="task">
+        <input type="checkbox" [checked]="t.done" (change)="onToggle(t.id)" />
+        <span class="text">{{ t.text }}</span>
+      </label>
+      <button class="delete" title="Remove" (click)="onRemove(t.id)">✕</button>
+    </li>
+  </ul>
+
+  <div class="empty" *ngIf="selectedTodos.length === 0">No completed tasks yet.</div>
+</div>
