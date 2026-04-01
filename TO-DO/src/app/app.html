@@ -36,26 +36,34 @@
 </style>
 
 <main class="main">
-  <div class="todo-root">
-    <h1>{{ title() }}</h1>
+  <div class="container">
+    <div class="todo-root">
+      <h1>{{ title() }}</h1>
 
-    <div class="add-row">
-      <input #newTodo type="text" placeholder="Add a task" aria-label="New task"
-        (keydown.enter)="add(newTodo.value, newTodo)" />
-      <button class="add-btn" (click)="add(newTodo.value, newTodo)">Add</button>
+      <div class="add-row">
+        <input #newTodo type="text" placeholder="Add a task" aria-label="New task"
+          (keydown.enter)="add(newTodo.value, newTodo)" />
+        <button class="add-btn" (click)="add(newTodo.value, newTodo)">Add</button>
+      </div>
+
+      <ul class="todo-list">
+        <li *ngFor="let t of todos()" [class.done]="t.done">
+          <label class="task">
+            <input type="checkbox" [checked]="t.done" (change)="toggle(t.id)" />
+            <span class="text">{{ t.text }}</span>
+          </label>
+          <button class="delete" title="Remove" (click)="remove(t.id)">✕</button>
+        </li>
+      </ul>
+
+      <div class="empty" *ngIf="todos().length === 0">No tasks yet — add one above.</div>
     </div>
 
-    <ul class="todo-list">
-      <li *ngFor="let t of todos()" [class.done]="t.done">
-        <label class="task">
-          <input type="checkbox" [checked]="t.done" (change)="toggle(t.id)" />
-          <span class="text">{{ t.text }}</span>
-        </label>
-        <button class="delete" title="Remove" (click)="remove(t.id)">✕</button>
-      </li>
-    </ul>
-
-    <div class="empty" *ngIf="todos().length === 0">No tasks yet — add one above.</div>
+    <app-selected-todos
+      [todos]="todos()"
+      (toggle)="toggle($event)"
+      (remove)="remove($event)">
+    </app-selected-todos>
   </div>
 </main>
 
