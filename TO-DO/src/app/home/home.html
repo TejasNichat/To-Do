@@ -1,0 +1,49 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">TO-DO App</h1>
+      <p class="hero-subtitle">Stay organized and productive with your personal task manager</p>
+      <button class="cta-btn" routerLink="/app">Get Started</button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Why Choose Our App?</h2>
+    <div class="features-grid">
+      <div *ngFor="let feature of features" class="feature-card">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div *ngFor="let stat of stats" class="stat-card">
+        <div class="stat-number">{{ stat.number }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to Get Started?</h2>
+    <p>Start organizing your tasks today and boost your productivity</p>
+    <button class="cta-btn large" routerLink="/app">Open TO-DO App</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="home-footer">
+    <p>&copy; 2026 TO-DO App. Built with Angular 18+</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+</div>
