@@ -1,0 +1,90 @@
+<div class="about-container">
+  <!-- Header Section -->
+  <section class="about-header">
+    <div class="header-content">
+      <h1>About TO-DO App</h1>
+      <p>A simple yet powerful task management application built with modern web technologies</p>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section">
+    <div class="mission-content">
+      <h2>Our Mission</h2>
+      <p>
+        We believe that productivity tools should be simple, fast, and accessible to everyone.
+        Our TO-DO app is designed to help you stay organized without unnecessary complexity.
+        With a clean interface and powerful features, we empower users to focus on what matters most.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="tech-section">
+    <h2>Built With</h2>
+    <div class="tech-grid">
+      <div *ngFor="let member of teamMembers" class="tech-card">
+        <div class="tech-icon">{{ member.icon }}</div>
+        <h3>{{ member.name }}</h3>
+        <p class="role">{{ member.role }}</p>
+        <p class="description">{{ member.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Why We Built This</h2>
+    <div class="features-list">
+      <div class="feature-item">
+        <h3>✓ Simplicity First</h3>
+        <p>No account needed. No complex settings. Just add your tasks and get to work.</p>
+      </div>
+      <div class="feature-item">
+        <h3>✓ Privacy Focused</h3>
+        <p>Your tasks are stored locally in your browser. We never access or store your data on servers.</p>
+      </div>
+      <div class="feature-item">
+        <h3>✓ Fast Performance</h3>
+        <p>Built with modern Angular framework for lightning-fast performance and smooth interactions.</p>
+      </div>
+      <div class="feature-item">
+        <h3>✓ Beautiful Design</h3>
+        <p>Ocean blue theme provides a calm, professional environment for focused productivity.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Section -->
+  <section class="timeline-section">
+    <h2>Our Journey</h2>
+    <div class="timeline">
+      <div *ngFor="let milestone of milestones; let last = last" class="timeline-item" [class.last]="last">
+        <div class="timeline-marker">
+          <div class="marker-dot"></div>
+          <div class="marker-year">{{ milestone.year }}</div>
+        </div>
+        <div class="timeline-content">
+          <h3>{{ milestone.title }}</h3>
+          <p>{{ milestone.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to Get More Done?</h2>
+    <p>Start using TO-DO app today and boost your productivity</p>
+    <button class="cta-btn" routerLink="/app">Open TO-DO App</button>
+    <button class="back-btn" routerLink="/">Back to Home</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="about-footer">
+    <p>&copy; 2026 TO-DO App. All rights reserved.</p>
+    <div class="footer-info">
+      <p>Built with ❤️ using Angular 18+</p>
+    </div>
+  </footer>
+</div>
