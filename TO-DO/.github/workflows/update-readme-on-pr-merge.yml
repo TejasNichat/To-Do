@@ -1,0 +1,63 @@
+name: Update README on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  update-readme:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract PR Information
+        id: pr_info
+        run: |
+          echo "pr_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "pr_author=${{ github.event.pull_request.user.login }}" >> $GITHUB_OUTPUT
+      
+      - name: Get Copilot Review
+        id: get_review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            const copilotReview = reviews.data.find(r => r.user.login.includes('copilot'));
+            if (copilotReview && copilotReview.body) {
+              core.setOutput('summary', copilotReview.body.substring(0, 200));
+            }
+      
+      - name: Update README
+        run: |
+          TIMESTAMP=$(date +%Y-%m-%d)
+          PR_ENTRY="- **[${{ steps.pr_info.outputs.pr_title }}](https://github.com/${{ github.repository }}/pull/${{ steps.pr_info.outputs.pr_number }})** by @${{ steps.pr_info.outputs.pr_author }} ($TIMESTAMP)"
+          
+          if [ -n "${{ steps.get_review.outputs.summary }}" ]; then
+            PR_ENTRY="$PR_ENTRY\n  *Copilot Review:* ${{ steps.get_review.outputs.summary }}"
+          fi
+          
+          # Add to Recent Updates section or create it
+          if grep -q "## Recent Updates" TO-DO/README.md; then
+            sed -i "/## Recent Updates/a\\$PR_ENTRY" TO-DO/README.md
+          else
+            sed -i "/## License/i## Recent Updates\n\n$PR_ENTRY\n" TO-DO/README.md
+          fi
+      
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add TO-DO/README.md
+          git commit -m "docs: Update README with PR #${{ steps.pr_info.outputs.pr_number }} - ${{ steps.pr_info.outputs.pr_title }}" || echo "No changes to commit"
+          git push
