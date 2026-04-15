@@ -320,10 +320,10 @@ Contributions are welcome! Feel free to:
 
 <!-- PR-UPDATES-START -->
 
-### PR #15
-**Title:** new c
+### PR #16
+**Title:** updated components
 
-**Description:** new commponent created
+**Description:** added a new commponent and removed 3
 
 Merged on: Wed Apr 15 2026
 
