@@ -10,17 +10,17 @@ on:
 permissions:
   contents: write
 
-
-
 jobs:
   update-readme:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Debug file structure
+        run: ls -R
 
       - name: Set PR info
         run: |
@@ -35,6 +35,9 @@ jobs:
 
       - name: Run Node script
         run: node scripts/update-readme.js
+
+      - name: Show updated README
+        run: cat TO-DO/README.md
 
       - name: Commit changes
         run: |
