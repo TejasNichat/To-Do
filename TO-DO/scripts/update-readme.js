@@ -1,37 +1,50 @@
-const fs = require("fs");
+name: Smart README Update
 
-const filePath = "TO-DO/README.md";
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
 
-// Read existing README
-let readme = fs.readFileSync(filePath, "utf8");
+permissions:
+  contents: write
 
-// Get PR data from environment
-const title = process.env.PR_TITLE;
-const body = process.env.PR_BODY;
-const number = process.env.PR_NUMBER;
+jobs:
+  update-readme:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
 
-// New content
-const newEntry = `
-### PR #${number}
-**Title:** ${title}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-**Description:** ${body}
+      - name: Debug repo structure
+        run: ls -R
 
-Merged on: ${new Date().toDateString()}
-`;
+      - name: Set PR info
+        run: |
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
-// Replace inside marker section
-const updated = readme.replace(
-  /<!-- PR-UPDATES-START -->[\s\S]*<!-- PR-UPDATES-END -->/,
-  `<!-- PR-UPDATES-START -->
-${newEntry}
-<!-- PR-UPDATES-END -->`
-);
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-// Write updated README
-fs.writeFileSync(filePath, updated);
+      - name: Run Node script
+        run: |
+          echo "Running script..."
+          node scripts/update-readme.js
 
-console.log("README updated successfully!");
+      - name: Show updated README
+        run: cat TO-DO/README.md
 
-
-//testing
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add TO-DO/README.md
+          git diff --staged --quiet || git commit -m "Smart README update from PR #$PR_NUMBER"
+          git push
