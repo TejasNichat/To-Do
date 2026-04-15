@@ -1,10 +1,14 @@
-name: Update README after PR merge
+name: Smart README Update
 
 on:
   pull_request:
     branches:
       - develop
-    types: [closed]
+    types:
+      - closed
+
+permissions:
+  contents: write
 
 permissions:
   contents: write
@@ -14,28 +18,29 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
-    steps:
 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Get PR info
+      - name: Set PR info
         run: |
           echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
           echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
-      - name: Update README
-        run: |
-          echo "## Latest Update from PR" >> README.md
-          echo "- Title: $PR_TITLE" >> README.md
-          echo "- Description: $PR_BODY" >> README.md
-          echo "- Merged on: $(date)" >> README.md
-          echo "" >> README.md
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Run Node script
+        run: node scripts/update-readme.js
 
       - name: Commit changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add README.md
-          git diff --staged --quiet || git commit -m "Auto update README from merged PR"
+          git add TO-DO/README.md
+          git diff --staged --quiet || git commit -m "Smart README update from PR #$PR_NUMBER"
           git push
