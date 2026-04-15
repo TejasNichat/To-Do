@@ -1,50 +1,40 @@
-name: Smart README Update
+const fs = require("fs");
 
-on:
-  pull_request:
-    branches:
-      - develop
-    types:
-      - closed
+const filePath = "TO-DO/README.md";
 
-permissions:
-  contents: write
+// Read README
+let readme = fs.readFileSync(filePath, "utf8");
 
-jobs:
-  update-readme:
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+// PR data from GitHub Actions
+const title = process.env.PR_TITLE || "No title";
+const body = process.env.PR_BODY || "No description";
+const number = process.env.PR_NUMBER || "";
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+// New entry
+const newEntry = `
+### PR #${number}
+**Title:** ${title}
 
-      - name: Debug repo structure
-        run: ls -R
+**Description:** ${body}
 
-      - name: Set PR info
-        run: |
-          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
-          echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+Merged on: ${new Date().toDateString()}
+`;
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+// Check if markers exist
+if (!readme.includes("<!-- PR-UPDATES-START -->")) {
+  console.log("Markers not found in README");
+  process.exit(0);
+}
 
-      - name: Run Node script
-        run: |
-          echo "Running script..."
-          node scripts/update-readme.js
+// Replace content between markers
+const updatedReadme = readme.replace(
+  /<!-- PR-UPDATES-START -->[\s\S]*<!-- PR-UPDATES-END -->/,
+  `<!-- PR-UPDATES-START -->
+${newEntry}
+<!-- PR-UPDATES-END -->`
+);
 
-      - name: Show updated README
-        run: cat TO-DO/README.md
+// Write back to file
+fs.writeFileSync(filePath, updatedReadme);
 
-      - name: Commit changes
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add TO-DO/README.md
-          git diff --staged --quiet || git commit -m "Smart README update from PR #$PR_NUMBER"
-          git push
+console.log("✅ README updated successfully");
