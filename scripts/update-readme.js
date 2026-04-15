@@ -1,18 +1,27 @@
 const fs = require("fs");
+const { execSync } = require("child_process");
 
 const filePath = "TO-DO/README.md";
-
-// Read README
 let readme = fs.readFileSync(filePath, "utf8");
 
-// PR data from GitHub Actions
-const title = process.env.PR_TITLE || "No title";
-const body = process.env.PR_BODY || "No description";
+const title = process.env.PR_TITLE || "";
+const body = process.env.PR_BODY || "";
 const number = process.env.PR_NUMBER || "";
 
+// 🔍 Get changed files
+let changedFiles = "";
+try {
+  changedFiles = execSync("git diff --name-only HEAD~1 HEAD").toString();
+} catch (e) {
+  console.log("Could not get changed files");
+}
 
-// New entry
-const newEntry = `
+const lowerText = (title + " " + body).toLowerCase();
+
+// ------------------
+// 1. Always update PR section
+// ------------------
+const prEntry = `
 ### PR #${number}
 **Title:** ${title}
 
@@ -21,21 +30,83 @@ const newEntry = `
 Merged on: ${new Date().toDateString()}
 `;
 
-// Check if markers exist
-if (!readme.includes("<!-- PR-UPDATES-START -->")) {
-  console.log("Markers not found in README");
-  process.exit(0);
-}
-
-// Replace content between markers
-const updatedReadme = readme.replace(
+readme = readme.replace(
   /<!-- PR-UPDATES-START -->[\s\S]*<!-- PR-UPDATES-END -->/,
   `<!-- PR-UPDATES-START -->
-${newEntry}
+${prEntry}
 <!-- PR-UPDATES-END -->`
 );
 
-// Write back to file
-fs.writeFileSync(filePath, updatedReadme);
+// ------------------
+// 2. Detect type of change
+// ------------------
+const isComponent = changedFiles.includes(".component");
+const isFeature = lowerText.includes("feature");
+const isBugFix = lowerText.includes("fix") || lowerText.includes("bug");
+const isVersion = lowerText.includes("version") || lowerText.includes("upgrade");
+const isArchitecture = lowerText.includes("architecture");
 
-console.log("✅ README updated successfully");
+// ------------------
+// 3. Update Features
+// ------------------
+if (isFeature) {
+  readme = readme.replace(
+    /## Features([\s\S]*?)\n##/,
+    (match) => {
+      return match.replace(
+        "\n##",
+        `\n- ✅ **${title}** - Added via PR\n\n##`
+      );
+    }
+  );
+}
+
+// ------------------
+// 4. Update Project Structure
+// ------------------
+if (isComponent) {
+  readme = readme.replace(
+    /src\/([\s\S]*?)styles\.css/,
+    (match) => {
+      return match + `\n├── New Component (from PR #${number})`;
+    }
+  );
+}
+
+// ------------------
+// 5. Update Technologies (version change)
+// ------------------
+if (isVersion) {
+  readme = readme.replace(
+    /## Technologies Used([\s\S]*?)##/,
+    (match) => {
+      return match.replace(
+        "\n##",
+        `\n- Updated version via PR #${number}\n\n##`
+      );
+    }
+  );
+}
+
+// ------------------
+// 6. Update Architecture section
+// ------------------
+if (isArchitecture) {
+  readme = readme.replace(
+    /## Component Architecture([\s\S]*?)##/,
+    (match) => {
+      return match.replace(
+        "\n##",
+        `\n\n> Updated architecture based on PR #${number}\n\n##`
+      );
+    }
+  );
+}
+
+// ------------------
+// 7. Bug fix → keep in PR section only
+// ------------------
+
+fs.writeFileSync(filePath, readme);
+
+console.log("✅ Fully smart README updated");
